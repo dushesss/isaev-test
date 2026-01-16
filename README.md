@@ -1,59 +1,313 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Products API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+RESTful API для поиска товаров с фильтрацией, сортировкой и пагинацией, реализованная на Laravel с соблюдением принципов SOLID.
 
-## About Laravel
+## 🚀 Установка
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Требования
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP >= 8.2
+- Composer
+- SQLite (или другая поддерживаемая БД)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Шаги установки
 
-## Learning Laravel
+1. **Клонируйте репозиторий:**
+```bash
+git clone <repository-url>
+cd isaev-test
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+2. **Установите зависимости:**
+```bash
+composer install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. **Настройте окружение:**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+4. **Настройте базу данных:**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Для SQLite (по умолчанию):
+```bash
+touch database/database.sqlite
+```
 
-### Premium Partners
+Или измените `.env` для использования другой БД:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. **Выполните миграции:**
+```bash
+php artisan migrate
+```
 
-## Contributing
+6. **Заполните базу данных тестовыми данными:**
+```bash
+php artisan db:seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Или выполните миграции и сидеры одной командой:
+```bash
+php artisan migrate --seed
+```
 
-## Code of Conduct
+7. **Запустите сервер разработки:**
+```bash
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+API будет доступно по адресу: `http://localhost:8000/api/products`
 
-## Security Vulnerabilities
+## 📚 API Документация
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Endpoint
 
-## License
+```
+GET /api/products
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Параметры запроса
+
+Все параметры опциональны.
+
+| Параметр | Тип | Описание | Пример |
+|----------|-----|----------|--------|
+| `q` | string | Поиск по подстроке в названии товара | `?q=телефон` |
+| `price_from` | decimal | Минимальная цена | `?price_from=1000` |
+| `price_to` | decimal | Максимальная цена | `?price_to=50000` |
+| `category_id` | integer | ID категории | `?category_id=1` |
+| `in_stock` | boolean | Наличие товара (true/false) | `?in_stock=true` |
+| `rating_from` | float | Минимальный рейтинг (0-5) | `?rating_from=4.0` |
+| `sort` | string | Сортировка (см. ниже) | `?sort=price_asc` |
+| `per_page` | integer | Товаров на странице (по умолчанию 15) | `?per_page=20` |
+| `page` | integer | Номер страницы (по умолчанию 1) | `?page=2` |
+
+### Параметры сортировки
+
+- `price_asc` - по цене по возрастанию
+- `price_desc` - по цене по убыванию
+- `rating_desc` - по рейтингу по убыванию
+- `newest` - по дате создания (новые сначала) - **значение по умолчанию**
+
+### Примеры запросов
+
+#### 1. Получить все товары
+```bash
+curl -X GET "http://localhost:8000/api/products"
+```
+
+#### 2. Поиск по названию
+```bash
+curl -X GET "http://localhost:8000/api/products?q=телефон"
+```
+
+#### 3. Фильтр по цене
+```bash
+curl -X GET "http://localhost:8000/api/products?price_from=1000&price_to=50000"
+```
+
+#### 4. Фильтр по категории и наличию
+```bash
+curl -X GET "http://localhost:8000/api/products?category_id=1&in_stock=true"
+```
+
+#### 5. Фильтр по рейтингу
+```bash
+curl -X GET "http://localhost:8000/api/products?rating_from=4.0"
+```
+
+#### 6. Сортировка по цене
+```bash
+curl -X GET "http://localhost:8000/api/products?sort=price_asc"
+```
+
+#### 7. Комплексный запрос
+```bash
+curl -X GET "http://localhost:8000/api/products?q=телефон&price_from=1000&price_to=50000&category_id=1&in_stock=true&rating_from=4.0&sort=price_asc&per_page=20&page=1"
+```
+
+### Формат ответа
+
+#### Успешный ответ (200 OK)
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Samsung Смартфон Galaxy Pro",
+      "price": "25000.00",
+      "category_id": 1,
+      "in_stock": true,
+      "rating": 4.5,
+      "created_at": "2026-01-16T08:15:00.000000Z",
+      "updated_at": "2026-01-16T08:15:00.000000Z",
+      "category": {
+        "id": 1,
+        "name": "Электроника",
+        "created_at": "2026-01-16T08:10:00.000000Z",
+        "updated_at": "2026-01-16T08:10:00.000000Z"
+      }
+    }
+  ],
+  "current_page": 1,
+  "per_page": 15,
+  "total": 100,
+  "last_page": 7,
+  "from": 1,
+  "to": 15,
+  "path": "http://localhost:8000/api/products",
+  "first_page_url": "http://localhost:8000/api/products?page=1",
+  "last_page_url": "http://localhost:8000/api/products?page=7",
+  "next_page_url": "http://localhost:8000/api/products?page=2",
+  "prev_page_url": null
+}
+```
+
+## 🏗️ Архитектура проекта
+
+Проект реализован с соблюдением принципов SOLID:
+
+### Структура проекта
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   └── Api/
+│   │       └── ProductController.php    # Контроллер (только HTTP логика)
+│   └── Requests/
+│       └── ProductIndexRequest.php      # Валидация запросов
+├── Repositories/
+│   ├── ProductRepositoryInterface.php   # Интерфейс репозитория
+│   └── ProductRepository.php            # Реализация репозитория
+├── Services/
+│   ├── ProductFilterService.php         # Сервис фильтрации
+│   └── ProductSortService.php           # Сервис сортировки
+├── Models/
+│   ├── Product.php                      # Модель товара
+│   └── Category.php                     # Модель категории
+└── Providers/
+    └── AppServiceProvider.php           # Регистрация зависимостей
+```
+
+### Принципы SOLID
+
+1. **Single Responsibility Principle (SRP)**
+   - Каждый класс имеет одну ответственность
+   - `ProductController` - только обработка HTTP запросов
+   - `ProductFilterService` - только фильтрация
+   - `ProductSortService` - только сортировка
+
+2. **Open/Closed Principle (OCP)**
+   - Код открыт для расширения, закрыт для модификации
+   - Новые фильтры можно добавлять через расширение сервисов
+
+3. **Liskov Substitution Principle (LSP)**
+   - `ProductRepository` реализует `ProductRepositoryInterface`
+   - Можно заменить реализацию без изменения кода
+
+4. **Interface Segregation Principle (ISP)**
+   - Интерфейсы содержат только необходимые методы
+
+5. **Dependency Inversion Principle (DIP)**
+   - Зависимости через интерфейсы, а не конкретные классы
+   - Dependency Injection через конструктор
+
+## 🗄️ База данных
+
+### Таблицы
+
+#### categories
+- `id` - ID категории
+- `name` - Название категории
+- `created_at` - Дата создания
+- `updated_at` - Дата обновления
+
+#### products
+- `id` - ID товара
+- `name` - Название товара (индексировано)
+- `price` - Цена (decimal)
+- `category_id` - ID категории (foreign key)
+- `in_stock` - Наличие (boolean)
+- `rating` - Рейтинг (float, 0-5)
+- `created_at` - Дата создания
+- `updated_at` - Дата обновления
+
+### Индексы
+
+Для оптимизации запросов созданы индексы на:
+- `name` - для поиска по названию
+- `price` - для фильтрации по цене
+- `category_id` - для фильтрации по категории
+- `in_stock` - для фильтрации по наличию
+- `rating` - для фильтрации по рейтингу
+
+## 🧪 Тестирование
+
+### Запуск тестов
+
+```bash
+php artisan test
+```
+
+## 📝 Сидеры
+
+Проект включает сидеры для заполнения базы данных тестовыми данными:
+
+- **CategorySeeder** - создает 10 категорий товаров
+- **ProductSeeder** - создает 100 товаров с реалистичными названиями
+
+Названия товаров генерируются из массивов брендов, моделей и типов для каждой категории.
+
+## 🔧 Настройка
+
+### Конфигурация пагинации
+
+По умолчанию на странице отображается 15 товаров. Это можно изменить через параметр `per_page` (максимум 100).
+
+### Конфигурация базы данных
+
+Настройки базы данных находятся в файле `.env`:
+
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database.sqlite
+```
+
+## 📦 Зависимости
+
+Основные зависимости проекта:
+
+- `laravel/framework` - Laravel фреймворк
+- `fakerphp/faker` - Генерация тестовых данных
+
+## 🤝 Вклад в проект
+
+1. Форкните репозиторий
+2. Создайте ветку для новой функции (`git checkout -b feature/AmazingFeature`)
+3. Закоммитьте изменения (`git commit -m 'Add some AmazingFeature'`)
+4. Запушьте в ветку (`git push origin feature/AmazingFeature`)
+5. Откройте Pull Request
+
+## 📄 Лицензия
+
+Проект использует лицензию MIT. См. файл `LICENSE` для подробностей.
+
+## 👤 Автор
+
+Проект создан в рамках тестового задания.
+
+---
+
+**Примечание:** Для работы с SQLite убедитесь, что расширение `pdo_sqlite` установлено и включено в PHP.
